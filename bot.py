@@ -237,4 +237,28 @@ async def gamble(ctx, gamble_amount: int):
 
     user_assets[user_id] = asset  # 최종 자산 저장
 
+@bot.command(name="복권")
+async def lottery(ctx):
+    user_id = ctx.author.id
+    initialize_user(user_id)
+    asset = user_assets[user_id]
+    ticket_cost = 10000  # 복권 비용
+
+    if asset < ticket_cost:
+        await ctx.send("복권을 구입하기 위한 자산이 부족합니다.")
+        return
+
+    # 복권 비용 차감
+    asset -= ticket_cost
+
+    # 10% 확률로 100,000원 획득
+    if random.randint(1, 10) == 1:  # 1에서 10 중 1을 뽑으면 당첨
+        win_amount = 100000
+        asset += win_amount
+        await ctx.send(f"🎉 축하합니다! 복권에 당첨되어 {win_amount}원을 획득하셨습니다. 현재 자산: {asset}원")
+    else:
+        await ctx.send("💸 아쉽게도 복권에 당첨되지 않았습니다. 현재 자산: {asset}원")
+
+    user_assets[user_id] = asset  # 최종 자산 저장
+
 bot.run(TOKEN)
